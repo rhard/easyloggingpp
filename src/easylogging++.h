@@ -276,7 +276,7 @@ ELPP_INTERNAL_DEBUGGING_OUT_INFO << ELPP_INTERNAL_DEBUGGING_MSG(internalInfoStre
 // Function macro ELPP_FUNC
 #undef ELPP_FUNC
 #if ELPP_COMPILER_MSVC  // Visual C++
-#  define ELPP_FUNC __FUNCSIG__
+#  define ELPP_FUNC __MY_FUNCSIG__
 #elif ELPP_COMPILER_GCC  // GCC
 #  define ELPP_FUNC __PRETTY_FUNCTION__
 #elif ELPP_COMPILER_INTEL  // Intel C++
@@ -284,11 +284,11 @@ ELPP_INTERNAL_DEBUGGING_OUT_INFO << ELPP_INTERNAL_DEBUGGING_MSG(internalInfoStre
 #elif ELPP_COMPILER_CLANG  // Clang++
 #  define ELPP_FUNC __PRETTY_FUNCTION__
 #else
-#  if defined(__func__)
-#    define ELPP_FUNC __func__
+#  if defined(__my_func__)
+#    define ELPP_FUNC __my_func__
 #  else
 #    define ELPP_FUNC ""
-#  endif  // defined(__func__)
+#  endif  // defined(__my_func__)
 #endif  // defined(_MSC_VER)
 #undef ELPP_VARIADIC_TEMPLATES_SUPPORTED
 // Keep following line commented until features are fixed
@@ -3274,7 +3274,7 @@ void Logger::log_(Level level, int vlevel, const char* s, const T& value, const 
 template <typename T>
 void Logger::log_(Level level, int vlevel, const T& log) {
   if (level == Level::Verbose) {
-    if (ELPP->vRegistry()->allowed(vlevel, __FILE__)) {
+    if (ELPP->vRegistry()->allowed(vlevel, __MY_FILE__)) {
       base::Writer(Level::Verbose, "FILE", 0, "FUNCTION",
                    base::DispatchAction::NormalLog, vlevel).construct(this, false) << log;
     } else {
@@ -3382,18 +3382,18 @@ LOGGER_LEVEL_WRITERS_DISABLED(trace, Level::Trace)
 #endif // ELPP_COMPILER_MSVC
 #define el_resolveVALength(_0, _1, _2, _3, _4, _5, _6, _7, _8, _9, _10, N, ...) N
 #define ELPP_WRITE_LOG(writer, level, dispatchAction, ...) \
-writer(level, __FILE__, __LINE__, ELPP_FUNC, dispatchAction).construct(el_getVALength(__VA_ARGS__), __VA_ARGS__)
+writer(level, __MY_FILE__, __LINE__, ELPP_FUNC, dispatchAction).construct(el_getVALength(__VA_ARGS__), __VA_ARGS__)
 #define ELPP_WRITE_LOG_IF(writer, condition, level, dispatchAction, ...) if (condition) \
-writer(level, __FILE__, __LINE__, ELPP_FUNC, dispatchAction).construct(el_getVALength(__VA_ARGS__), __VA_ARGS__)
+writer(level, __MY_FILE__, __LINE__, ELPP_FUNC, dispatchAction).construct(el_getVALength(__VA_ARGS__), __VA_ARGS__)
 #define ELPP_WRITE_LOG_EVERY_N(writer, occasion, level, dispatchAction, ...) \
-ELPP->validateEveryNCounter(__FILE__, __LINE__, occasion) && \
-writer(level, __FILE__, __LINE__, ELPP_FUNC, dispatchAction).construct(el_getVALength(__VA_ARGS__), __VA_ARGS__)
+ELPP->validateEveryNCounter(__MY_FILE__, __LINE__, occasion) && \
+writer(level, __MY_FILE__, __LINE__, ELPP_FUNC, dispatchAction).construct(el_getVALength(__VA_ARGS__), __VA_ARGS__)
 #define ELPP_WRITE_LOG_AFTER_N(writer, n, level, dispatchAction, ...) \
-ELPP->validateAfterNCounter(__FILE__, __LINE__, n) && \
-writer(level, __FILE__, __LINE__, ELPP_FUNC, dispatchAction).construct(el_getVALength(__VA_ARGS__), __VA_ARGS__)
+ELPP->validateAfterNCounter(__MY_FILE__, __LINE__, n) && \
+writer(level, __MY_FILE__, __LINE__, ELPP_FUNC, dispatchAction).construct(el_getVALength(__VA_ARGS__), __VA_ARGS__)
 #define ELPP_WRITE_LOG_N_TIMES(writer, n, level, dispatchAction, ...) \
-ELPP->validateNTimesCounter(__FILE__, __LINE__, n) && \
-writer(level, __FILE__, __LINE__, ELPP_FUNC, dispatchAction).construct(el_getVALength(__VA_ARGS__), __VA_ARGS__)
+ELPP->validateNTimesCounter(__MY_FILE__, __LINE__, n) && \
+writer(level, __MY_FILE__, __LINE__, ELPP_FUNC, dispatchAction).construct(el_getVALength(__VA_ARGS__), __VA_ARGS__)
 #if defined(ELPP_FEATURE_ALL) || defined(ELPP_FEATURE_PERFORMANCE_TRACKING)
 class PerformanceTrackingData {
  public:
@@ -3465,7 +3465,7 @@ class PerformanceTracker : public base::threading::ThreadSafe, public Loggable {
   }
   virtual ~PerformanceTracker(void);
   /// @brief A checkpoint for current performanceTracker block.
-  void checkpoint(const std::string& id = std::string(), const char* file = __FILE__,
+  void checkpoint(const std::string& id = std::string(), const char* file = __MY_FILE__,
                   base::type::LineNumber line = __LINE__,
                   const char* func = "");
   inline Level level(void) const {
@@ -3890,7 +3890,7 @@ class VersionInfo : base::StaticClass {
 }  // namespace el
 #undef VLOG_IS_ON
 /// @brief Determines whether verbose logging is on for specified level current file.
-#define VLOG_IS_ON(verboseLevel) (ELPP->vRegistry()->allowed(verboseLevel, __FILE__))
+#define VLOG_IS_ON(verboseLevel) (ELPP->vRegistry()->allowed(verboseLevel, __MY_FILE__))
 #undef TIMED_BLOCK
 #undef TIMED_SCOPE
 #undef TIMED_SCOPE_IF
@@ -3924,12 +3924,12 @@ class VersionInfo : base::StaticClass {
 #define TIMED_FUNC(obj) TIMED_SCOPE(obj, ELPP_FUNC)
 #undef PERFORMANCE_CHECKPOINT
 #undef PERFORMANCE_CHECKPOINT_WITH_ID
-#define PERFORMANCE_CHECKPOINT(obj) obj->checkpoint(std::string(), __FILE__, __LINE__, ELPP_FUNC)
-#define PERFORMANCE_CHECKPOINT_WITH_ID(obj, id) obj->checkpoint(id, __FILE__, __LINE__, ELPP_FUNC)
+#define PERFORMANCE_CHECKPOINT(obj) obj->checkpoint(std::string(), __MY_FILE__, __LINE__, ELPP_FUNC)
+#define PERFORMANCE_CHECKPOINT_WITH_ID(obj, id) obj->checkpoint(id, __MY_FILE__, __LINE__, ELPP_FUNC)
 #undef ELPP_COUNTER
 #undef ELPP_COUNTER_POS
 /// @brief Gets hit counter for file/line
-#define ELPP_COUNTER (ELPP->hitCounters()->getCounter(__FILE__, __LINE__))
+#define ELPP_COUNTER (ELPP->hitCounters()->getCounter(__MY_FILE__, __LINE__))
 /// @brief Gets hit counter position for file/line, -1 if not registered yet
 #define ELPP_COUNTER_POS (ELPP_COUNTER == nullptr ? -1 : ELPP_COUNTER->hitCounts())
 // Undef levels to support LOG(LEVEL)
@@ -4009,7 +4009,7 @@ class VersionInfo : base::StaticClass {
 #endif  // ELPP_TRACE_LOG
 #if ELPP_VERBOSE_LOG
 #  define CVERBOSE(writer, vlevel, dispatchAction, ...) if (VLOG_IS_ON(vlevel)) writer(\
-el::Level::Verbose, __FILE__, __LINE__, ELPP_FUNC, dispatchAction, vlevel).construct(el_getVALength(__VA_ARGS__), __VA_ARGS__)
+el::Level::Verbose, __MY_FILE__, __LINE__, ELPP_FUNC, dispatchAction, vlevel).construct(el_getVALength(__VA_ARGS__), __VA_ARGS__)
 #else
 #  define CVERBOSE(writer, vlevel, dispatchAction, ...) el::base::NullWriter()
 #endif  // ELPP_VERBOSE_LOG
@@ -4052,7 +4052,7 @@ ELPP_WRITE_LOG_IF(writer, (condition_), el::Level::Trace, dispatchAction, __VA_A
 #endif  // ELPP_TRACE_LOG
 #if ELPP_VERBOSE_LOG
 #  define CVERBOSE_IF(writer, condition_, vlevel, dispatchAction, ...) if (VLOG_IS_ON(vlevel) && (condition_)) writer( \
-el::Level::Verbose, __FILE__, __LINE__, ELPP_FUNC, dispatchAction, vlevel).construct(el_getVALength(__VA_ARGS__), __VA_ARGS__)
+el::Level::Verbose, __MY_FILE__, __LINE__, ELPP_FUNC, dispatchAction, vlevel).construct(el_getVALength(__VA_ARGS__), __VA_ARGS__)
 #else
 #  define CVERBOSE_IF(writer, condition_, vlevel, dispatchAction, ...) el::base::NullWriter()
 #endif  // ELPP_VERBOSE_LOG
@@ -4095,7 +4095,7 @@ ELPP_WRITE_LOG_EVERY_N(writer, occasion, el::Level::Trace, dispatchAction, __VA_
 #endif  // ELPP_TRACE_LOG
 #if ELPP_VERBOSE_LOG
 #  define CVERBOSE_EVERY_N(writer, occasion, vlevel, dispatchAction, ...)\
-CVERBOSE_IF(writer, ELPP->validateEveryNCounter(__FILE__, __LINE__, occasion), vlevel, dispatchAction, __VA_ARGS__)
+CVERBOSE_IF(writer, ELPP->validateEveryNCounter(__MY_FILE__, __LINE__, occasion), vlevel, dispatchAction, __VA_ARGS__)
 #else
 #  define CVERBOSE_EVERY_N(writer, occasion, vlevel, dispatchAction, ...) el::base::NullWriter()
 #endif  // ELPP_VERBOSE_LOG
@@ -4138,7 +4138,7 @@ ELPP_WRITE_LOG_AFTER_N(writer, n, el::Level::Trace, dispatchAction, __VA_ARGS__)
 #endif  // ELPP_TRACE_LOG
 #if ELPP_VERBOSE_LOG
 #  define CVERBOSE_AFTER_N(writer, n, vlevel, dispatchAction, ...)\
-CVERBOSE_IF(writer, ELPP->validateAfterNCounter(__FILE__, __LINE__, n), vlevel, dispatchAction, __VA_ARGS__)
+CVERBOSE_IF(writer, ELPP->validateAfterNCounter(__MY_FILE__, __LINE__, n), vlevel, dispatchAction, __VA_ARGS__)
 #else
 #  define CVERBOSE_AFTER_N(writer, n, vlevel, dispatchAction, ...) el::base::NullWriter()
 #endif  // ELPP_VERBOSE_LOG
@@ -4181,7 +4181,7 @@ ELPP_WRITE_LOG_N_TIMES(writer, n, el::Level::Trace, dispatchAction, __VA_ARGS__)
 #endif  // ELPP_TRACE_LOG
 #if ELPP_VERBOSE_LOG
 #  define CVERBOSE_N_TIMES(writer, n, vlevel, dispatchAction, ...)\
-CVERBOSE_IF(writer, ELPP->validateNTimesCounter(__FILE__, __LINE__, n), vlevel, dispatchAction, __VA_ARGS__)
+CVERBOSE_IF(writer, ELPP->validateNTimesCounter(__MY_FILE__, __LINE__, n), vlevel, dispatchAction, __VA_ARGS__)
 #else
 #  define CVERBOSE_N_TIMES(writer, n, vlevel, dispatchAction, ...) el::base::NullWriter()
 #endif  // ELPP_VERBOSE_LOG
