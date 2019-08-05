@@ -282,11 +282,11 @@ ELPP_INTERNAL_DEBUGGING_OUT_INFO << ELPP_INTERNAL_DEBUGGING_MSG(internalInfoStre
 #if ELPP_COMPILER_MSVC  // Visual C++
 #  define ELPP_FUNC __MY_FUNCSIG__
 #elif ELPP_COMPILER_GCC  // GCC
-#  define ELPP_FUNC __PRETTY_FUNCTION__
+#  define ELPP_FUNC __MY_PRETTY_FUNCTION__
 #elif ELPP_COMPILER_INTEL  // Intel C++
-#  define ELPP_FUNC __PRETTY_FUNCTION__
+#  define ELPP_FUNC __MY_PRETTY_FUNCTION__
 #elif ELPP_COMPILER_CLANG  // Clang++
-#  define ELPP_FUNC __PRETTY_FUNCTION__
+#  define ELPP_FUNC __MY_PRETTY_FUNCTION__
 #else
 #  if defined(__my_func__)
 #    define ELPP_FUNC __my_func__
